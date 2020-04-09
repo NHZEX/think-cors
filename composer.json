@@ -32,7 +32,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Test\\Think\\": "tests"
+            "Test\\Think\\Cors\\": "tests"
         }
     },
     "extra": {

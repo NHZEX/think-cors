@@ -17,7 +17,7 @@ class CorsMiddleware
 
     public function __construct(Config $config)
     {
-        $conf = $config->get('cros', []);
+        $conf = $config->get('cors', []);
 
         $this->cors = new CorsCore(
             $conf['allowed_origins'] ?? [],
