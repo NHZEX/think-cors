@@ -5,7 +5,6 @@ namespace HZEX\Think\Cors;
 
 use think\Request;
 use think\Response;
-use function HZEX\Think\Cors\str_starts_with;
 
 class CorsCore
 {
@@ -286,7 +285,7 @@ class CorsCore
             return $this->createBadRequestResponse(405, 'Method not allowed');
         }
 
-        if ($this->allowedHeaders && $headers = $request->header('Access-Control-Request-Headers')) {
+        if ($this->allowedHeaders !== true && $headers = $request->header('Access-Control-Request-Headers')) {
             $headers = array_filter(explode(',', strtolower($headers)));
 
             foreach ($headers as $header) {
