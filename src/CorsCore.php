@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace app\Service\Cors;
+namespace HZEX\Think\Cors;
 
 use think\Request;
 use think\Response;
 use function HZEX\Think\Cors\str_starts_with;
 
-class CorsService
+class CorsCore
 {
     /**
      * 允许访问的来源

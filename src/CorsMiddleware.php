@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace app\Service\Cors;
+namespace HZEX\Think\Cors;
 
 use Closure;
 use think\Config;
@@ -11,7 +11,7 @@ use think\Response;
 class CorsMiddleware
 {
     /**
-     * @var CorsService
+     * @var CorsCore
      */
     protected $cors;
 
@@ -19,7 +19,7 @@ class CorsMiddleware
     {
         $conf = $config->get('cros', []);
 
-        $this->cors = new CorsService(
+        $this->cors = new CorsCore(
             $conf['allowed_origins'] ?? [],
             $conf['allowed_origins_patterns'] ?? [],
             $conf['allowed_methods'] ?? [],
