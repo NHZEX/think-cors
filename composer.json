@@ -28,7 +28,6 @@
             "HZEX\\Think\\Cors\\": "src"
         },
         "files": [
-            "src/helper.php"
         ]
     },
     "autoload-dev": {
