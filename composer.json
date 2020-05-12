@@ -16,6 +16,7 @@
     ],
     "require": {
         "php": "^7.1",
+        "symfony/polyfill-php80": "^1.16",
         "topthink/framework": "^6.0"
     },
     "require-dev": {
@@ -27,7 +28,6 @@
             "HZEX\\Think\\Cors\\": "src"
         },
         "files": [
-            "src/helper.php"
         ]
     },
     "autoload-dev": {

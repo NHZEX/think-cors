@@ -40,20 +40,17 @@ class CorsMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if ($this->cors->isPreflightRequest($request)) {
-            return $this->cors->handlePreflightRequest($request);
-        }
-
-        if (!$this->cors->isRequestAllowed($request)) {
-            return Response::create('Not allowed in CORS policy.', 'html', 403);
+            $response = $this->cors->handlePreflightRequest($request);
+            return $this->cors->varyHeader($response, 'Access-Control-Request-Method');
         }
 
         /** @var Response $response */
         $response = $next($request);
 
-        if ($this->cors->isCorsRequest($request)) {
-            $this->cors->addRequestHeaders($response, $request);
+        if ($request->method(true) === 'OPTIONS') {
+            $this->cors->varyHeader($response, 'Access-Control-Request-Method');
         }
 
-        return $response;
+        return $this->cors->addActualRequestHeaders($response, $request);
     }
 }
