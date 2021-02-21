@@ -5,6 +5,7 @@ namespace HZEX\Think\Cors;
 
 use think\Request;
 use think\Response;
+use function array_key_first;
 use function str_starts_with;
 
 class CorsCore
@@ -80,8 +81,7 @@ class CorsCore
                     $this->allowedOrigins[] = "http:{$allowedOrigin}";
                     $this->allowedOrigins[] = "https:{$allowedOrigin}";
                     continue;
-                }
-                if (!str_starts_with($allowedOrigin, 'http')) {
+                } elseif (!str_starts_with($allowedOrigin, 'http')) {
                     $this->allowedOrigins[] = "http://{$allowedOrigin}";
                     $this->allowedOrigins[] = "https://{$allowedOrigin}";
                     continue;
@@ -156,7 +156,7 @@ class CorsCore
      * @param Request $request
      * @return bool
      */
-    public function isCorsRequest(Request $request)
+    public function isCorsRequest(Request $request): bool
     {
         return $this->hasOrigin($request) && !$this->isSameHost($request);
     }
@@ -241,7 +241,11 @@ class CorsCore
             $this->setHeader($response, 'Access-Control-Allow-Origin', '*');
         } elseif ($this->isSingleOriginAllowed()) {
             // Single origins can be safely set
-            $this->setHeader($response, 'Access-Control-Allow-Origin', array_values($this->allowedOrigins)[0]);
+            $this->setHeader(
+                $response,
+                'Access-Control-Allow-Origin',
+                $this->allowedOrigins[array_key_first($this->allowedOrigins)]
+            );
         } else {
             // For dynamic headers, check the origin first
             if ($this->isOriginAllowed($request)) {

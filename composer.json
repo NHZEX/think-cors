@@ -16,7 +16,8 @@
     ],
     "require": {
         "php": "^7.1|^8.0",
-        "symfony/polyfill-php80": "^1.16",
+        "symfony/polyfill-php73": "^1",
+        "symfony/polyfill-php80": "^1",
         "topthink/framework": "^6.0"
     },
     "require-dev": {
