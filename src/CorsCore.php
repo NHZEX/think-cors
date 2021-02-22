@@ -1,10 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HZEX\Think\Cors;
 
 use think\Request;
 use think\Response;
+use function rtrim;
+use function preg_match;
+use function strtoupper;
+use function in_array;
+use function explode;
 
 class CorsCore
 {
@@ -17,7 +23,8 @@ class CorsCore
      * CorsService constructor.
      * @param CorsConfig $config
      */
-    public function __construct(CorsConfig $config) {
+    public function __construct(CorsConfig $config)
+    {
         $this->config = $config;
     }
 

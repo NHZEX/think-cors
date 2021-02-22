@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace HZEX\Think\Cors;
@@ -9,6 +10,7 @@ use function implode;
 use function in_array;
 use function is_array;
 use function rtrim;
+use function array_key_first;
 
 class CorsConfig
 {
