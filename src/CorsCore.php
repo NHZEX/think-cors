@@ -5,106 +5,20 @@ namespace HZEX\Think\Cors;
 
 use think\Request;
 use think\Response;
-use function array_key_first;
-use function str_starts_with;
 
 class CorsCore
 {
     /**
-     * 允许访问的来源
-     * @var array|true
+     * @var CorsConfig
      */
-    protected $allowedOrigins;
-
-    /**
-     * 允许访问的来源匹配正则
-     * @var array
-     */
-    protected $allowedOriginsPatterns;
-
-    /**
-     * 允许的请求方法
-     * @var array|true
-     */
-    protected $allowedMethods;
-
-    /**
-     * 允许的请求头
-     * @var array|true
-     */
-    protected $allowedHeaders;
-
-    /**
-     * 导出的协议头
-     * @var array
-     */
-    protected $exposedHeaders;
-
-    /**
-     * 支持身份凭证
-     * @var bool
-     */
-    protected $supportsCredentials = true;
-
-    /**
-     * 预验证缓存时间
-     * @var int
-     */
-    protected $maxAge = 0;
+    protected $config;
 
     /**
      * CorsService constructor.
-     * @param array $allowedOrigins
-     * @param array $allowedOriginsPatterns
-     * @param array $allowedMethods
-     * @param array $allowedHeaders
-     * @param array $exposedHeaders
-     * @param bool  $supportsCredentials
-     * @param int   $maxAge
+     * @param CorsConfig $config
      */
-    public function __construct(
-        array $allowedOrigins = [],
-        array $allowedOriginsPatterns = [],
-        array $allowedMethods = [],
-        array $allowedHeaders = [],
-        array $exposedHeaders = [],
-        bool $supportsCredentials = false,
-        int $maxAge = 0
-    ) {
-        $this->supportsCredentials = $supportsCredentials;
-
-        $allowedOrigins = in_array('*', $allowedOrigins) ? true : $allowedOrigins;
-        if (is_array($allowedOrigins)) {
-            foreach ($allowedOrigins as $allowedOrigin) {
-                $allowedOrigin = rtrim($allowedOrigin, '/');
-                if (str_starts_with($allowedOrigin, '//')) {
-                    $this->allowedOrigins[] = "http:{$allowedOrigin}";
-                    $this->allowedOrigins[] = "https:{$allowedOrigin}";
-                    continue;
-                } elseif (!str_starts_with($allowedOrigin, 'http')) {
-                    $this->allowedOrigins[] = "http://{$allowedOrigin}";
-                    $this->allowedOrigins[] = "https://{$allowedOrigin}";
-                    continue;
-                }
-                $this->allowedOrigins[] = $allowedOrigin;
-            }
-        } else {
-            $this->allowedOrigins = $allowedOrigins;
-        }
-
-        $this->allowedOriginsPatterns = $allowedOriginsPatterns;
-
-        $this->allowedMethods = in_array('*', $allowedMethods)
-            ? true
-            : array_map('\strtoupper', $allowedMethods);
-
-        $this->allowedHeaders = in_array('*', $allowedHeaders)
-            ? true
-            : array_map('\strtolower', $allowedHeaders);
-
-        $this->exposedHeaders = $exposedHeaders;
-
-        $this->maxAge = $maxAge;
+    public function __construct(CorsConfig $config) {
+        $this->config = $config;
     }
 
     /**
@@ -184,13 +98,13 @@ class CorsCore
         $this->configureAllowedOrigin($response, $request);
 
         if ($response->getHeader('Access-Control-Allow-Origin')) {
-            $this->configureAllowCredentials($response, $request);
+            $this->configureAllowCredentials($response);
 
             $this->configureAllowedMethods($response, $request);
 
             $this->configureAllowedHeaders($response, $request);
 
-            $this->configureMaxAge($response, $request);
+            $this->configureMaxAge($response);
         }
 
         return $response;
@@ -201,9 +115,9 @@ class CorsCore
         $this->configureAllowedOrigin($response, $request);
 
         if ($response->getHeader('Access-Control-Allow-Origin')) {
-            $this->configureAllowCredentials($response, $request);
+            $this->configureAllowCredentials($response);
 
-            $this->configureExposedHeaders($response, $request);
+            $this->configureExposedHeaders($response);
         }
 
         return $response;
@@ -211,7 +125,7 @@ class CorsCore
 
     public function isOriginAllowed(Request $request): bool
     {
-        if ($this->allowedOrigins === true) {
+        if ($this->config->getAllowedOrigins() === true) {
             return true;
         }
 
@@ -221,11 +135,11 @@ class CorsCore
 
         $origin = $this->getOrigin($request);
 
-        if (in_array($origin, $this->allowedOrigins)) {
+        if (in_array($origin, $this->config->getAllowedOrigins())) {
             return true;
         }
 
-        foreach ($this->allowedOriginsPatterns as $pattern) {
+        foreach ($this->config->getAllowedOriginsPatterns() as $pattern) {
             if (preg_match($pattern, $origin)) {
                 return true;
             }
@@ -236,15 +150,15 @@ class CorsCore
 
     private function configureAllowedOrigin(Response $response, Request $request)
     {
-        if ($this->allowedOrigins === true && !$this->supportsCredentials) {
+        if ($this->config->getAllowedOrigins() === true && !$this->config->isSupportsCredentials()) {
             // Safe+cacheable, allow everything
             $this->setHeader($response, 'Access-Control-Allow-Origin', '*');
-        } elseif ($this->isSingleOriginAllowed()) {
+        } elseif ($this->config->isSingleOriginAllowed()) {
             // Single origins can be safely set
             $this->setHeader(
                 $response,
                 'Access-Control-Allow-Origin',
-                $this->allowedOrigins[array_key_first($this->allowedOrigins)]
+                $this->config->getAllowedOriginsFirst()
             );
         } else {
             // For dynamic headers, check the origin first
@@ -256,22 +170,13 @@ class CorsCore
         }
     }
 
-    private function isSingleOriginAllowed(): bool
-    {
-        if ($this->allowedOrigins === true || !empty($this->allowedOriginsPatterns)) {
-            return false;
-        }
-
-        return count($this->allowedOrigins) === 1;
-    }
-
     private function configureAllowedMethods(Response $response, Request $request)
     {
-        if ($this->allowedMethods === true) {
+        if ($this->config->getAllowedMethods() === true) {
             $allowMethods = strtoupper($request->header('Access-Control-Request-Method'));
             $this->varyHeader($response, 'Access-Control-Request-Method');
         } else {
-            $allowMethods = implode(', ', $this->allowedMethods);
+            $allowMethods = $this->config->getAllowedMethodsLine();
         }
 
         $this->setHeader($response, 'Access-Control-Allow-Methods', $allowMethods);
@@ -279,33 +184,33 @@ class CorsCore
 
     private function configureAllowedHeaders(Response $response, Request $request)
     {
-        if ($this->allowedHeaders === true) {
+        if ($this->config->getAllowedHeaders() === true) {
             $allowHeaders = $request->header('Access-Control-Request-Headers');
             $this->varyHeader($response, 'Access-Control-Request-Headers');
         } else {
-            $allowHeaders = implode(', ', $this->allowedHeaders);
+            $allowHeaders = $this->config->getAllowedHeadersLine();
         }
         $this->setHeader($response, 'Access-Control-Allow-Headers', $allowHeaders);
     }
 
-    private function configureAllowCredentials(Response $response, Request $request)
+    private function configureAllowCredentials(Response $response)
     {
-        if ($this->supportsCredentials) {
+        if ($this->config->isSupportsCredentials()) {
             $this->setHeader($response, 'Access-Control-Allow-Credentials', 'true');
         }
     }
 
-    private function configureExposedHeaders(Response $response, Request $request)
+    private function configureExposedHeaders(Response $response)
     {
-        if ($this->exposedHeaders) {
-            $this->setHeader($response, 'Access-Control-Expose-Headers', implode(', ', $this->exposedHeaders));
+        if ($this->config->getExposedHeaders()) {
+            $this->setHeader($response, 'Access-Control-Expose-Headers', $this->config->getExposedHeadersLine());
         }
     }
 
-    private function configureMaxAge(Response $response, Request $request)
+    private function configureMaxAge(Response $response)
     {
-        if ($this->maxAge !== null) {
-            $this->setHeader($response, 'Access-Control-Max-Age', $this->maxAge);
+        if ($this->config->getMaxAge() !== null) {
+            $this->setHeader($response, 'Access-Control-Max-Age', $this->config->getMaxAge());
         }
     }
 

@@ -11,23 +11,14 @@ use think\Response;
 class CorsMiddleware
 {
     /**
-     * @var CorsCore
+     * @var CorsConfig
      */
-    protected $cors;
+    protected $config;
 
     public function __construct(Config $config)
     {
         $conf = $config->get('cors', []);
-
-        $this->cors = new CorsCore(
-            $conf['allowed_origins'] ?? [],
-            $conf['allowed_origins_patterns'] ?? [],
-            $conf['allowed_methods'] ?? [],
-            $conf['allowed_headers'] ?? [],
-            $conf['exposed_headers'] ?? [],
-            $conf['supports_credentials'] ?? false,
-            $conf['max_age'] ?? 0
-        );
+        $this->config = CorsConfig::fromArray($conf);
     }
 
     /**
@@ -39,18 +30,19 @@ class CorsMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($this->cors->isPreflightRequest($request)) {
-            $response = $this->cors->handlePreflightRequest($request);
-            return $this->cors->varyHeader($response, 'Access-Control-Request-Method');
+        $cors = new CorsCore($this->config);
+        if ($cors->isPreflightRequest($request)) {
+            $response = $cors->handlePreflightRequest($request);
+            return $cors->varyHeader($response, 'Access-Control-Request-Method');
         }
 
         /** @var Response $response */
         $response = $next($request);
 
         if ($request->method(true) === 'OPTIONS') {
-            $this->cors->varyHeader($response, 'Access-Control-Request-Method');
+            $cors->varyHeader($response, 'Access-Control-Request-Method');
         }
 
-        return $this->cors->addActualRequestHeaders($response, $request);
+        return $cors->addActualRequestHeaders($response, $request);
     }
 }
