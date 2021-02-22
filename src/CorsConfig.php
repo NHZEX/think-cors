@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace HZEX\Think\Cors;
 
+use think\App;
 use function array_map;
 use function count;
 use function implode;
@@ -55,6 +56,14 @@ class CorsConfig
      * @var int|null
      */
     protected $maxAge = 0;
+
+    /**
+     * @return CorsConfig
+     */
+    public static function getConfigFromContainer(): CorsConfig
+    {
+        return App::getInstance()->get(CorsConfig::class);
+    }
 
     /**
      * @param array<string, mixed> $conf

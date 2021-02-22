@@ -5,23 +5,12 @@ declare(strict_types=1);
 namespace HZEX\Think\Cors;
 
 use Closure;
-use think\Config;
+use think\App;
 use think\Request;
 use think\Response;
 
 class CorsMiddleware
 {
-    /**
-     * @var CorsConfig
-     */
-    protected $config;
-
-    public function __construct(Config $config)
-    {
-        $conf = $config->get('cors', []);
-        $this->config = CorsConfig::fromArray($conf);
-    }
-
     /**
      * 允许跨域请求
      * @access public
@@ -32,7 +21,8 @@ class CorsMiddleware
      */
     public function handle(Request $request, Closure $next, ?CorsConfig $config = null): Response
     {
-        $cors = new CorsCore($config ?? $this->config);
+        $config = $config ?? CorsConfig::getConfigFromContainer();
+        $cors = new CorsCore($config);
         if ($cors->isPreflightRequest($request)) {
             $response = $cors->handlePreflightRequest($request);
             return $cors->varyHeader($response, 'Access-Control-Request-Method');
