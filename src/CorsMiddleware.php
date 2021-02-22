@@ -25,13 +25,14 @@ class CorsMiddleware
     /**
      * 允许跨域请求
      * @access public
-     * @param Request $request
-     * @param Closure $next
+     * @param Request         $request
+     * @param Closure         $next
+     * @param CorsConfig|null $config
      * @return Response
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, ?CorsConfig $config = null): Response
     {
-        $cors = new CorsCore($this->config);
+        $cors = new CorsCore($config ?? $this->config);
         if ($cors->isPreflightRequest($request)) {
             $response = $cors->handlePreflightRequest($request);
             return $cors->varyHeader($response, 'Access-Control-Request-Method');
