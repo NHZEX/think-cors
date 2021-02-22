@@ -21,6 +21,7 @@
         "topthink/framework": "^6.0"
     },
     "require-dev": {
+        "phpstan/phpstan": "^0.12.78",
         "phpunit/phpunit": "^8|^7|^9",
         "symfony/var-dumper": "^5.0|^4.0"
     },

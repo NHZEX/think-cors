@@ -1,0 +1,9 @@
+parameters:
+    level: 5
+    paths:
+        - src
+    scanFiles:
+    stubFiles:
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+includes:

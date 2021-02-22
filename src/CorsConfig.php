@@ -16,31 +16,31 @@ class CorsConfig
 {
     /**
      * 允许访问的来源
-     * @var array<int, string>|true
+     * @var string[]|true
      */
     protected $allowedOrigins;
 
     /**
      * 允许访问的来源匹配正则
-     * @var array<int, string>
+     * @var string[]
      */
     protected $allowedOriginsPatterns;
 
     /**
      * 允许的请求方法
-     * @var array<int, string>|true
+     * @var string[]|true
      */
     protected $allowedMethods;
 
     /**
      * 允许的请求头
-     * @var array<int, string>|true
+     * @var string[]|true
      */
     protected $allowedHeaders;
 
     /**
      * 导出的协议头
-     * @var array<int, string>
+     * @var string[]
      */
     protected $exposedHeaders;
 
@@ -57,8 +57,8 @@ class CorsConfig
     protected $maxAge = 0;
 
     /**
-     * @param array $conf
-     * @return static
+     * @param array<string, mixed> $conf
+     * @return self
      */
     public static function fromArray(array $conf): self
     {
@@ -73,23 +73,26 @@ class CorsConfig
     }
 
     /**
-     * @return array<int, string>|true
+     * @return string[]|true
      */
-    public function getAllowedOrigins(): array
+    public function getAllowedOrigins()
     {
         return $this->allowedOrigins;
     }
 
+    /**
+     * @return string
+     */
     public function getAllowedOriginsFirst(): string
     {
         return $this->allowedOrigins[array_key_first($this->allowedOrigins)];
     }
 
     /**
-     * @param array|true $allowedOrigins
-     * @return CorsConfig
+     * @param string[]|true $allowedOrigins
+     * @return self
      */
-    public function setAllowedOrigins(array $allowedOrigins): self
+    public function setAllowedOrigins($allowedOrigins): self
     {
         $allowedOrigins = in_array('*', $allowedOrigins) ? true : $allowedOrigins;
         if (is_array($allowedOrigins)) {
@@ -113,6 +116,9 @@ class CorsConfig
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function isSingleOriginAllowed(): bool
     {
         if ($this->allowedOrigins === true || !empty($this->allowedOriginsPatterns)) {
@@ -123,7 +129,7 @@ class CorsConfig
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getAllowedOriginsPatterns(): array
     {
@@ -131,8 +137,8 @@ class CorsConfig
     }
 
     /**
-     * @param array $allowedOriginsPatterns
-     * @return CorsConfig
+     * @param string[] $allowedOriginsPatterns
+     * @return self
      */
     public function setAllowedOriginsPatterns(array $allowedOriginsPatterns): self
     {
@@ -142,9 +148,9 @@ class CorsConfig
     }
 
     /**
-     * @return array<int, string>|true
+     * @return string[]|true
      */
-    public function getAllowedMethods(): array
+    public function getAllowedMethods()
     {
         return $this->allowedMethods;
     }
@@ -158,10 +164,10 @@ class CorsConfig
     }
 
     /**
-     * @param array|true $allowedMethods
-     * @return CorsConfig
+     * @param string[]|true $allowedMethods
+     * @return self
      */
-    public function setAllowedMethods(array $allowedMethods): self
+    public function setAllowedMethods($allowedMethods): self
     {
         $this->allowedMethods = in_array('*', $allowedMethods)
             ? true
@@ -171,9 +177,9 @@ class CorsConfig
     }
 
     /**
-     * @return array<int, string>|true
+     * @return string[]|true
      */
-    public function getAllowedHeaders(): array
+    public function getAllowedHeaders()
     {
         return $this->allowedHeaders;
     }
@@ -187,10 +193,10 @@ class CorsConfig
     }
 
     /**
-     * @param array|true $allowedHeaders
-     * @return CorsConfig
+     * @param string[]|true $allowedHeaders
+     * @return self
      */
-    public function setAllowedHeaders(array $allowedHeaders): self
+    public function setAllowedHeaders($allowedHeaders): self
     {
         $this->allowedHeaders = in_array('*', $allowedHeaders)
             ? true
@@ -200,7 +206,7 @@ class CorsConfig
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getExposedHeaders(): array
     {
@@ -216,8 +222,8 @@ class CorsConfig
     }
 
     /**
-     * @param array $exposedHeaders
-     * @return CorsConfig
+     * @param string[] $exposedHeaders
+     * @return self
      */
     public function setExposedHeaders(array $exposedHeaders): self
     {
@@ -236,7 +242,7 @@ class CorsConfig
 
     /**
      * @param bool $supportsCredentials
-     * @return CorsConfig
+     * @return self
      */
     public function setSupportsCredentials(bool $supportsCredentials): self
     {
@@ -255,7 +261,7 @@ class CorsConfig
 
     /**
      * @param int|null $maxAge
-     * @return CorsConfig
+     * @return self
      */
     public function setMaxAge(?int $maxAge): self
     {
