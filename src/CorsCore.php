@@ -168,8 +168,8 @@ class CorsCore
                 $this->config->getAllowedOriginsFirst()
             );
         } else {
-            // For dynamic headers, check the origin first
-            if (null !== $request->header('Origin') && $this->isOriginAllowed($request)) {
+            // For dynamic headers, set the requested Origin header when set and allowed
+            if ($this->isCorsRequest($request) && $this->isOriginAllowed($request)) {
                 $this->setHeader($response, 'Access-Control-Allow-Origin', $this->getOrigin($request));
             }
 
