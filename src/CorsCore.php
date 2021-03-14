@@ -79,7 +79,7 @@ class CorsCore
      */
     public function isCorsRequest(Request $request): bool
     {
-        return $this->hasOrigin($request) && !$this->isSameHost($request);
+        return $this->hasOrigin($request);
     }
 
     /**
@@ -169,7 +169,7 @@ class CorsCore
             );
         } else {
             // For dynamic headers, check the origin first
-            if ($this->isOriginAllowed($request)) {
+            if (null !== $request->header('Origin') && $this->isOriginAllowed($request)) {
                 $this->setHeader($response, 'Access-Control-Allow-Origin', $this->getOrigin($request));
             }
 
