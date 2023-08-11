@@ -1,4 +1,4 @@
-# ThinkPHP 6.0 - CORS 跨域控制扩展
+# ThinkPHP 6.1、8.0 - CORS 跨域控制扩展
 
 ### 全局启用
   - 配置服务注册 (app/service.php)：``\Zxin\Think\Cors\Service::class``
@@ -10,3 +10,6 @@
 
 ## 代码引用
 - [asm89/stack-cors](https://github.com/asm89/stack-cors)
+
+## TODO
+- 新的参考跟踪 [fruitcake/php-cors](https://github.com/fruitcake/php-cors)
