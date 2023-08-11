@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace HZEX\Think\Cors;
+namespace Zxin\Think\Cors;
 
 use Closure;
-use think\App;
 use think\Request;
 use think\Response;
 
@@ -21,7 +20,7 @@ class CorsMiddleware
      */
     public function handle(Request $request, Closure $next, ?CorsConfig $config = null): Response
     {
-        $config = $config ?? CorsConfig::getConfigFromContainer();
+        $config ??= CorsConfig::getConfigFromContainer();
         $cors = new CorsCore($config);
         if ($cors->isPreflightRequest($request)) {
             $response = $cors->handlePreflightRequest($request);

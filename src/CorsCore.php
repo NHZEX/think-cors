@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace HZEX\Think\Cors;
+namespace Zxin\Think\Cors;
 
 use think\Request;
 use think\Response;

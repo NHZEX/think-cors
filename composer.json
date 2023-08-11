@@ -20,6 +20,7 @@
         "topthink/framework": "^6.1|~8.0.1"
     },
     "require-dev": {
+        "php-cs-fixer/shim": "^3.22",
         "phpstan/phpstan": "^1.10.28",
         "phpunit/phpunit": "^9",
         "symfony/var-dumper": "^5.4|^6.0"
