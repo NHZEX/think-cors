@@ -14,14 +14,10 @@ use function explode;
 
 class CorsCore
 {
-    /**
-     * @var CorsConfig
-     */
-    protected $config;
+    protected CorsConfig $config;
 
     /**
      * CorsService constructor.
-     * @param CorsConfig $config
      */
     public function __construct(CorsConfig $config)
     {
